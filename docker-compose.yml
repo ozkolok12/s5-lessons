@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   de-pg-cr-af:
     image: cr.yandex/crp1r8pht0n0gl25aug1/de-pg-cr-af:latest
@@ -10,6 +8,7 @@ services:
     volumes:
       - s5t4postgresql:/var/lib/postgresql
       - ${AIRFLOW_DAGS_DIR:-./dags}:/lessons/dags
+      - ./ssl:/opt/airflow/ssl:ro
     environment:
       AIRFLOW_VAR_EXAMPLE_STG_DDL_FILES_PATH: "/lessons/dags/examples/stg/init_schema_dag/ddl"
     restart: unless-stopped
