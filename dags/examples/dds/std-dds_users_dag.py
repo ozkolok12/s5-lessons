@@ -9,7 +9,8 @@ from examples.dds.products_loader import ProductsLoader
 from examples.dds.orders_loader import OrdersLoader
 from examples.dds.sales_loader import SalesLoader
 from examples.dds.settlement_report_loader import SettlementReportLoader
-
+from examples.dds.courier_loader import CouriersLoader
+from examples.dds.deliveries_loader import DeliveriesLoader
 
 from lib import ConnectionBuilder
 
@@ -64,6 +65,16 @@ def stg_dds_load():
         settlement_loader = SettlementReportLoader(dwh_pg_connect, log)
         settlement_loader.load()
 
+    @task(task_id="couriers_load")
+    def load_couriers():
+        couriers_loader = CouriersLoader(origin_pg_connect, dwh_pg_connect, log)
+        couriers_loader.load_couriers()
+
+    @task(task_id="couriers_load")
+    def load_deliveries():
+        deliveries_loader = DeliveriesLoader(origin_pg_connect, dwh_pg_connect, log)
+        deliveries_loader.load_deliveries()
+
     users_task = load_users()
     restaurants_task = load_restaurants()
     timestamps_task = load_timestamps()
@@ -71,9 +82,11 @@ def stg_dds_load():
     orders_task = load_orders() 
     sales_task = load_sales()
     settlemet_task = settlement_report_load()
+    couriers_task = load_couriers()
+    deliveries_task = load_deliveries()
 
     # Задаём порядок
-    users_task >> restaurants_task >> timestamps_task >> products_task >> orders_task >> sales_task >> settlemet_task 
+    couriers_task >> deliveries_task >> users_task >> restaurants_task >> timestamps_task >> products_task >> orders_task >> sales_task >> settlemet_task 
 
 
 stg_dds_load = stg_dds_load()
